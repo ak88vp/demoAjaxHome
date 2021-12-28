@@ -90,7 +90,7 @@
                 str += "<tr>" + "<td>" + students[i].name + "</td>\n" +
                     " <td>" + students[i].age + "</td>\n" +
                     " <td>" + students[i].category.name + "</td>" +
-                    " <td>" + "<button >edit</button>\n" +"</td>" +
+                    " <td>" + "<button onclick=\"showEdit("+students[i].id+")\">edit</button>\n" +"</td>" +
                     " <td>" + "<button onclick=\"deleteStudent("+students[i].id+")\">delete</button>\n" +"</td>" +
                     " <td>" + "<button>profile</button>"+"</td>" +
                     "</tr>"
@@ -113,6 +113,60 @@
             }
 
         }
+        function showEdit(id){
+            let str='';
+            $.ajax({
+
+                type: "get",
+                url: "http://localhost:8080/api/students/"+id,
+
+                success:function (student){
+                    console.log(student)
+                        str+='<input type="text" value="' + student.name + '" id="name">\n' +
+                            '<input type="text" value="' + student.age + '" id="age">\n'+
+                            '<select id="idCategory">\n';
+                    $.ajax({
+                        type: "Get",
+                        url: "http://localhost:8080/api/students/category",
+                        success: function (categorys) {
+                            console.log(categorys)
+                            for (let i = 0; i < categorys.length; i++) {
+                                str += ` <option value="${categorys[i].id}">${categorys[i].name}</option>`
+                            }
+                            str += '</select>'+ '    <button onclick="saveEdit(' + student.id + ')">Save</button>'
+                            document.getElementById("res").innerHTML = str
+                        }
+                    })
+
+                },
+                error: function (error) {
+                    console.log(error)
+                }
+            })
+        }
+        function saveEdit(id){
+            let student={
+                name:document.getElementById("name").value,
+                age:document.getElementById("age").value,
+                category: {
+                    id:document.getElementById("idCategory").value,
+                }
+            }
+            console.log(student)
+            $.ajax({
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                type: "Put",
+                url: "http://localhost:8080/api/students/"+id,
+                data: JSON.stringify(student),
+                success: findAll,
+                error: function (error) {
+                    console.log(error)}
+            })
+        }
+
     </script>
 
 </head>
@@ -125,6 +179,8 @@
 </button>
 <center>
     <div id="res">
+        <input value="" id="name">
+        <input value="" id="age">
 
     </div>
 </center>
