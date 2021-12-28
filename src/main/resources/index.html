@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            border: 1px solid;
+        }
+
+        td, tr, th {
+            border: 1px solid;
+        }
+    </style>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script>
+        function findAll() {
+            $.ajax({
+                type: "Get",
+                url: "http://localhost:8080/api/students",
+                success: function (student) {
+                    console.log(student)
+                    display(student)
+                },
+                error: function (error) {
+                    alert("lỗi loz")
+                }
+            })
+        }
+
+        function showCreateStudent() {
+            let str = '<input type="text" id="name">\n' +
+                '        <input type="text" id="age">\n' +
+                '        <select id="idCategory">'
+            $.ajax({
+                type: "Get",
+                url: "http://localhost:8080/api/students/category",
+                success: function (categorys) {
+                    console.log(categorys)
+                    for (let i = 0; i < categorys.length; i++) {
+                        str += ` <option value="${categorys[i].id}">${categorys[i].name}</option>`
+                    }
+                    str += '</select> <button onclick="saveStudent()">create</button>'
+                    document.getElementById("res").innerHTML = str
+                },
+                error: function (error) {
+                    alert("sai lè")
+                }
+            })
+
+        }
+
+        function saveStudent() {
+            let student = {
+                name: document.getElementById("name").value,
+                age: document.getElementById("age").value,
+                category: {
+                    id: document.getElementById("idCategory").value
+                }
+            }
+            console.log(student)
+            $.ajax({
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                type: "POST",
+                url: "http://localhost:8080/api/students",
+                data: JSON.stringify(student),
+                success: findAll,
+                error: function (error) {
+                    console.log(error)
+                }
+            })
+
+        }
+
+        function display(students) {
+            let str = "<table>\n" +
+                "    <tr>\n" +
+                "        <th> Tên</th>\n" +
+                "        <th> Tuổi</th>\n" +
+                "        <th> Hạnh kiểm</th>\n" +
+                "        <th> Sửa</th>\n" +
+                "        <th> Xóa</th>\n" +
+                "        <th> Chi tiết</th>\n" +
+                "    </tr>"
+            for (let i = 0; i < students.length; i++) {
+                str += "<tr>" + "<td>" + students[i].name + "</td>\n" +
+                    " <td>" + students[i].age + "</td>\n" +
+                    " <td>" + students[i].category.name + "</td>" +
+                    " <td>" + "<button >edit</button>\n" +"</td>" +
+                    " <td>" + "<button onclick=\"deleteStudent("+students[i].id+")\">delete</button>\n" +"</td>" +
+                    " <td>" + "<button>profile</button>"+"</td>" +
+                    "</tr>"
+            }
+            str += " </table>"
+            document.getElementById("res").innerHTML = str
+        }
+        function deleteStudent(id){
+            console.log(id)
+            if(confirm("muốn xóa k nói 1 lời nào")){
+                $.ajax({
+                    type:"Delete",
+                    url:"http://localhost:8080/api/students/"+id,
+                    success:findAll,
+                    error:function (error){
+                        alert("tạch")
+                    }
+
+                })
+            }
+
+        }
+    </script>
+
+</head>
+<body>
+<button onclick="findAll()">
+    Show List
+</button>
+<button onclick="showCreateStudent()">
+    Create
+</button>
+<center>
+    <div id="res">
+
+    </div>
+</center>
+
+</body>
+</html>
