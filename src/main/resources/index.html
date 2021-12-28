@@ -166,6 +166,22 @@
                     console.log(error)}
             })
         }
+        function findByName(){
+            let key=document.getElementById("key").value
+            console.log(key)
+            $.ajax({
+                type: "Get",
+                url: "http://localhost:8080/api/students/key/" + key,
+                success: function (student) {
+                    console.log(student)
+                    display(student)
+                },
+                error: function (error) {
+                    console.log(error)
+                }
+            });
+        }
+
 
     </script>
 
@@ -177,11 +193,10 @@
 <button onclick="showCreateStudent()">
     Create
 </button>
+<input id="key">
+<button onclick="findByName()">Tìm kiếm</button>
 <center>
     <div id="res">
-        <input value="" id="name">
-        <input value="" id="age">
-
     </div>
 </center>
 

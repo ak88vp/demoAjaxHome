@@ -54,6 +54,11 @@ public class StudentController {
         studentService.save(student);
         return new ResponseEntity<>(student,HttpStatus.OK);
    }
+   @GetMapping("key/{key}")
+    public ResponseEntity<Iterable<Student>> findByName(@PathVariable String key){
+        Iterable<Student> students=studentService.findAllByNameContaining(key);
+        return new ResponseEntity<>(students,HttpStatus.OK);
+   }
 
 
 
